@@ -1,3 +1,22 @@
+# Team Best sin felles Github repo for DAT250 oppgaver
+
+TO-DO (Benjamin, Marit og Stian)
+1 - klon repoet til din lokale maskin
+2 - opprett ny branch lokalt på din maskin (git checkout -b <ditt navn>, altså f.eks git checkout -b stian)
+3 - oppdater hvor denne branchen skal pushe til (altså her), med kommandoen git push --set-upstream origin stian
+4 - gjør en ubetydelig forandring i en kommentar i en av filene (som en test)
+5 - git add .
+6 - git commit -m "din beskjed"
+7 - git push (skal nå pushe til dette repoet, og opprette en ny branch med ditt navn her inne)
+8 - gå tilbake her på Github, refresh siden, og se at din branch finnes med forandringene du nettopp gjorde
+
+# Huskeregler
+
+- Alltid jobb bare på din branch lokalt på maskinen
+- Når vi er enige om at noe en av oss har gjort skal bli en del av prosjektet, merger vi det inn på master branch 
+
+Alt under er README.md filen fra Github repoet jeg klonet fra UiS
+
 # social-insecurity
 
 This project defines a social media web application lacking many key security features. The goal is to identify as many of these as possible, and then proceed to patch them. It can also be used for practice from the perspective of an attacker.
