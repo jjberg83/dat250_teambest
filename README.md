@@ -12,7 +12,7 @@ TO-DO (Benjamin, Marit og Stian)
 
 # Huskeregler
 
-- Alltid jobb bare på din branch lokalt på maskinen
+- Alltid jobb bare på DIN branch lokalt på maskinen (f eks branchen stian)
 - Når vi er enige om at noe en av oss har gjort skal bli en del av prosjektet, merger vi det inn på master branch 
 
 Alt under er README.md filen fra Github repoet jeg klonet fra UiS
