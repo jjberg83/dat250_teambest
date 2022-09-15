@@ -1,0 +1,30 @@
+#1 novalidate i index.html
+
+På linje 19 og 35 ser vi at det står novalidate i slutten av form taggen
+Den kobler ut browserens validering av input fields
+Les mer her:
+https://stackoverflow.com/questions/45337792/what-does-the-novalidate-html-attribute-do
+Når vi sender inn, kan vi see i Mozilla Web Developer Tools (MWDT) at input faktisk blir sendt
+" or ""=" passerer, men
+" or "1"=1" passerer ikke gir internal server error
+
+Prøvde å ta vekk novalidate, og lagte ny bruker med " or ""=". 
+I databasen fikk jeg opp en bruker med 1 som verdi i alle felt.
+
+Så la jeg inn novalidate igje, og prøvde på det samme. 
+I databasen fikk jeg opp samme resultat.
+
+Altså blir det ikke sikrere av å ta vekk novalidate. 
+
+#2 To index urler i routes.py
+Vet ikke om det gjør noe, men det finnes både "/" og "/index" for index.html 
+
+#3 Muligheter for SQL injection i routes.py
+Forekommer første gang på linje 16. Her brukes str.format() metode. Ikke bra. Åpner opp for
+SQL injection. Kan fikses med prepared statements. Se mer info her:
+https://stackoverflow.com/questions/47318901/how-to-use-format-string-in-a-mysql-statement
+
+#4 MULIGHET FOR Å LESE AV BRUKERNAVN OG PASSORD MED BURPSUITE
+Siden det kun bruker http, kan man finne igjen brukernavn og passord når ny bruker opprettes
+ved å bruke BurpSuite. Man trenger altså ikke tilgang til databasen, og selv om form
+bruker post metoden (og dermed "skuler" infoen fra URLen), er det altså lett å få tak i. 
