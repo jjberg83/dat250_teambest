@@ -99,3 +99,5 @@ Most important files/directories:
 
 ## Questions
 If you have any questions or problems, don't hesitate to contact me, and I will get back to you as soon as possible.
+
+# Legger inn en ubetydelig forandring :)
