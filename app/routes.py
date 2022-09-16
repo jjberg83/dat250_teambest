@@ -3,6 +3,10 @@ from app import app, query_db
 from app.forms import IndexForm, PostForm, FriendsForm, ProfileForm, CommentsForm
 from datetime import datetime
 import os
+#############################
+from flask_wtf import FlaskForm
+from wtforms import (StringField, TextAreaField, IntegerField, BooleanField, RadioField)
+from wtforms.validators import InputRequired, Length
 
 # this file contains all the different routes, and the logic for communicating with the database
 
@@ -11,9 +15,11 @@ import os
 @app.route('/index', methods=['GET', 'POST'])
 def index():
     form = IndexForm()
-
+    
     if form.login.is_submitted() and form.login.submit.data:
+        print("inni første if")
         user = query_db('SELECT * FROM Users WHERE username="{}";'.format(form.login.username.data), one=True)
+        print("user is ", user)
         if user == None:
             flash('Sorry, this user does not exist!')
         elif user['password'] == form.login.password.data:
@@ -22,9 +28,15 @@ def index():
             flash('Sorry, wrong password!')
 
     elif form.register.is_submitted() and form.register.submit.data:
+        print("inni andre if")
         query_db('INSERT INTO Users (username, first_name, last_name, password) VALUES("{}", "{}", "{}", "{}");'.format(form.register.username.data, form.register.first_name.data,
          form.register.last_name.data, form.register.password.data))
+        print(form.register.username.data)
+        print(form.register.password.data)
         return redirect(url_for('index'))
+    print("her går vi straks inn på render_template")
+    
+    
     return render_template('index.html', title='Welcome', form=form)
 
 
