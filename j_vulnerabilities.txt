@@ -1,4 +1,4 @@
-#1 novalidate i index.html
+#1 novalidate i index.html--
 
 På linje 19 og 35 ser vi at det står novalidate i slutten av form taggen
 Den kobler ut browserens validering av input fields
