@@ -1,11 +1,11 @@
-from flask import render_template, flash, redirect, url_for, request
+from flask import Flask, render_template, flash, redirect, url_for, request
 from app import app, query_db
 from app.forms import IndexForm, PostForm, FriendsForm, ProfileForm, CommentsForm
 from datetime import datetime
 import os
 #############################
 from flask_wtf import FlaskForm
-from wtforms import (StringField, TextAreaField, IntegerField, BooleanField, RadioField)
+from wtforms import (StringField, PasswordField, SubmitField, TextAreaField, IntegerField, BooleanField, RadioField)
 from wtforms.validators import InputRequired, Length
 
 # this file contains all the different routes, and the logic for communicating with the database
