@@ -16,7 +16,7 @@ from wtforms.validators import InputRequired, Length
 def index():
     form = IndexForm()
     
-    if form.login.is_submitted() and form.login.submit.data:
+    if form.login.validate_on_submit() and form.login.is_submitted() and form.login.submit.data:
         print("inni første if")
         user = query_db('SELECT * FROM Users WHERE username="{}";'.format(form.login.username.data), one=True)
         print("user is ", user)
@@ -27,7 +27,7 @@ def index():
         else:
             flash('Sorry, wrong password!')
 
-    elif form.register.is_submitted() and form.register.submit.data:
+    elif form.register.validate_on_submit() and form.register.is_submitted() and form.register.submit.data:
         print("inni andre if")
         query_db('INSERT INTO Users (username, first_name, last_name, password) VALUES("{}", "{}", "{}", "{}");'.format(form.register.username.data, form.register.first_name.data,
          form.register.last_name.data, form.register.password.data))
