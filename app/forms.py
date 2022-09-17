@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, FormField, TextAreaField, FileField
 from wtforms.fields.html5 import DateField
-from wtforms.validators import InputRequired
+from wtforms.validators import InputRequired, Length
 
 # defines all forms in the application, these will be instantiated by the template,
 # and the routes.py will read the values of the fields
@@ -17,9 +17,12 @@ class LoginForm(FlaskForm):
 class RegisterForm(FlaskForm):
     first_name = StringField('First Name', render_kw={'placeholder': 'First Name'}, validators=[InputRequired()])
     last_name = StringField('Last Name', render_kw={'placeholder': 'Last Name'}, validators=[InputRequired()])
-    username = StringField('Username', render_kw={'placeholder': 'Username'}, validators=[InputRequired()])
-    password = PasswordField('Password', render_kw={'placeholder': 'Password'}, validators=[InputRequired()])
-    confirm_password = PasswordField('Confirm Password', render_kw={'placeholder': 'Confirm Password'}, validators=[InputRequired()])
+    username = StringField('Username', render_kw={'placeholder': 'Username'}, validators=[
+                           InputRequired(), Length(min=8, max=50, message="Must be between 8 and 50 characters")])
+    password = PasswordField('Password', render_kw={'placeholder': 'Password'}, validators=[
+                             InputRequired(), Length(min=8, max=50, message="Must be between 8 and 50 characters")])
+    confirm_password = PasswordField('Confirm Password', render_kw={'placeholder': 'Confirm Password'}, validators=[
+                                     InputRequired(), Length(min=8, max=50, message="Must be between 8 and 50 characters")])
     submit = SubmitField('Sign Up')
 
 class IndexForm(FlaskForm):
