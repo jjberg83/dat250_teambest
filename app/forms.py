@@ -1,12 +1,14 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, FormField, TextAreaField, FileField
 from wtforms.fields.html5 import DateField
-from wtforms.validators import InputRequired, Length, EqualTo
+from wtforms.validators import InputRequired, Length, EqualTo, NoneOf
 
 # defines all forms in the application, these will be instantiated by the template,
 # and the routes.py will read the values of the fields
 # TODO: Add validation, maybe use wtforms.validators??
 # TODO: There was some important security feature that wtforms provides, but I don't remember what; implement it
+
+invalidInput = ["marit", "stian", "benjamin", "jørund"]
 
 class LoginForm(FlaskForm):
     username = StringField('Username', render_kw={'placeholder': 'Username'}, validators=[InputRequired()])
@@ -15,7 +17,7 @@ class LoginForm(FlaskForm):
     submit = SubmitField('Sign In')
 
 class RegisterForm(FlaskForm):
-    first_name = StringField('First Name', render_kw={'placeholder': 'First Name'}, validators=[InputRequired()])
+    first_name = StringField('First Name', render_kw={'placeholder': 'First Name'}, validators=[InputRequired(), NoneOf(invalidInput)])
     last_name = StringField('Last Name', render_kw={'placeholder': 'Last Name'}, validators=[InputRequired()])
 
     username = StringField('Username', render_kw={'placeholder': 'Username'}, validators=[
