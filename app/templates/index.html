@@ -32,7 +32,7 @@
                 </div>
                 <div class="card-body">
                     <h5 class="card-title">Create a new profile</h5>
-                    <form action="{{ url_for('index') }}", method="POST" novalidate>
+                    <form action="", method="POST" novalidate>
                         {{ wtf.form_field(form.register.csrf_token) }}
                         {{ wtf.form_field(form.register.first_name) }}
                         {{ wtf.form_field(form.register.last_name) }}
