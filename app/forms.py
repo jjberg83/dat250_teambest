@@ -28,9 +28,10 @@ class RegisterForm(FlaskForm):
                                      InputRequired(), Length(min=8, max=50, message="Must be between 8 and 50 characters")])
     submit = SubmitField('Sign Up')
 
-class IndexForm(FlaskForm):
-    login = FormField(LoginForm)
-    register = FormField(RegisterForm)
+#class IndexForm(FlaskForm):
+#login = FormField(LoginForm)
+#register = FormField(RegisterForm) 
+#Problematisk å samle disse, siden de da oppfører seg som ett og samme form.
 
 class PostForm(FlaskForm):
     content = TextAreaField('New Post', render_kw={'placeholder': 'What are you thinking about?'})

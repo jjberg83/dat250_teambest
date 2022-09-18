@@ -1,6 +1,6 @@
 from flask import Flask, render_template, flash, redirect, url_for, request
 from app import app, query_db
-from app.forms import IndexForm, PostForm, FriendsForm, ProfileForm, CommentsForm
+from app.forms import LoginForm, RegisterForm, PostForm, FriendsForm, ProfileForm, CommentsForm # IndexForm erstattet av LoginForm og RegisterForm
 from datetime import datetime
 import os
 #############################
@@ -14,30 +14,33 @@ from wtforms.validators import InputRequired, Length
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/index', methods=['GET', 'POST'])
 def index():
-    form = IndexForm()
+    # form = IndexForm()  """
+    loginForm = LoginForm()
+    registerForm = RegisterForm()
     
-    if form.login.validate_on_submit() and form.login.is_submitted() and form.login.submit.data:
+    if loginForm.validate_on_submit() and loginForm.is_submitted() and loginForm.submit.data:
         print("inni første if")
-        user = query_db('SELECT * FROM Users WHERE username="{}";'.format(form.login.username.data), one=True)
+        user = query_db(
+            'SELECT * FROM Users WHERE username="{}";'.format(loginForm.username.data), one=True)
         print("user is ", user)
         if user == None:
             flash('Sorry, this user does not exist!')
-        elif user['password'] == form.login.password.data:
-            return redirect(url_for('stream', username=form.login.username.data))
+        elif user['password'] == loginForm.password.data:
+            return redirect(url_for('stream', username=loginForm.username.data))
         else:
             flash('Sorry, wrong password!')
 
-    elif form.register.validate_on_submit() and form.register.is_submitted() and form.register.submit.data:
+    elif registerForm.validate_on_submit() and registerForm.is_submitted() and registerForm.submit.data:
         print("inni andre if")
-        query_db('INSERT INTO Users (username, first_name, last_name, password) VALUES("{}", "{}", "{}", "{}");'.format(form.register.username.data, form.register.first_name.data,
-         form.register.last_name.data, form.register.password.data))
-        print(form.register.username.data)
-        print(form.register.password.data)
+        query_db('INSERT INTO Users (username, first_name, last_name, password) VALUES("{}", "{}", "{}", "{}");'.format(registerForm.username.data, registerForm.first_name.data,
+        registerForm.last_name.data, registerForm.password.data))
+        print(registerForm.username.data)
+        print(registerForm.password.data)
         return redirect(url_for('index'))
     print("her går vi straks inn på render_template")
     
     
-    return render_template('index.html', title='Welcome', form=form)
+    return render_template('index.html', title='Welcome', loginForm=loginForm, registerForm=registerForm)
 
 
 # content stream page
