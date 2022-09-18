@@ -17,7 +17,7 @@ class LoginForm(FlaskForm):
     submit = SubmitField('Sign In')
 
 class RegisterForm(FlaskForm):
-    first_name = StringField('First Name', render_kw={'placeholder': 'First Name'}, validators=[InputRequired(), NoneOf(invalidInput)])
+    first_name = StringField('First Name', render_kw={'placeholder': 'First Name'}, validators=[InputRequired(), NoneOf(invalidInput, message="Invalid input")])
     last_name = StringField('Last Name', render_kw={'placeholder': 'Last Name'}, validators=[InputRequired()])
 
     username = StringField('Username', render_kw={'placeholder': 'Username'}, validators=[
