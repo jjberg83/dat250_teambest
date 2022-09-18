@@ -17,10 +17,10 @@
                 <div class="card-body">
                     <h5 class="card-title">Access an existing profile</h5>
                     <form action="" method="POST" novalidate>
-                        {{ wtf.form_field(loginForm.username) }}
-                        {{ wtf.form_field(loginForm.password) }}
-                        {{ wtf.form_field(loginForm.remember_me) }}
-                        {{ wtf.form_field(loginForm.submit, class="btn btn-primary") }}
+                        {{ wtf.form_field(form.login.username) }}
+                        {{ wtf.form_field(form.login.password) }}
+                        {{ wtf.form_field(form.login.remember_me) }}
+                        {{ wtf.form_field(form.login.submit, class="btn btn-primary") }}
                     </form>
                 </div>
             </div>
@@ -32,14 +32,14 @@
                 </div>
                 <div class="card-body">
                     <h5 class="card-title">Create a new profile</h5>
-                    <form action="", method="POST" novalidate>
-                        {{ wtf.form_field(registerForm.csrf_token) }}
-                        {{ wtf.form_field(registerForm.first_name) }}
-                        {{ wtf.form_field(registerForm.last_name) }}
-                        {{ wtf.form_field(registerForm.username) }}
-                        {{ wtf.form_field(registerForm.password) }}
-                        {{ wtf.form_field(registerForm.confirm_password) }}
-                        {{ wtf.form_field(registerForm.submit, class="btn btn-primary") }}
+                    <form action="{{ url_for('index') }}", method="POST" novalidate>
+                        {{ wtf.form_field(form.register.csrf_token) }}
+                        {{ wtf.form_field(form.register.first_name) }}
+                        {{ wtf.form_field(form.register.last_name) }}
+                        {{ wtf.form_field(form.register.username) }}
+                        {{ wtf.form_field(form.register.password) }}
+                        {{ wtf.form_field(form.register.confirm_password) }}
+                        {{ wtf.form_field(form.register.submit, class="btn btn-primary") }}
                     </form>
                 </div>
             </div>
