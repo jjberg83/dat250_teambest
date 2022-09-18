@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, FormField, TextAreaField, FileField
 from wtforms.fields.html5 import DateField
-from wtforms.validators import InputRequired, Length
+from wtforms.validators import InputRequired, Length, EqualTo
 
 # defines all forms in the application, these will be instantiated by the template,
 # and the routes.py will read the values of the fields
@@ -21,7 +21,7 @@ class RegisterForm(FlaskForm):
     username = StringField('Username', render_kw={'placeholder': 'Username'}, validators=[
                            InputRequired(), Length(min=5, max=50, message="Must be between 5 and 50 characters")])
     password = PasswordField('Password', render_kw={'placeholder': 'Password'}, validators=[
-                             InputRequired(), Length(min=8, max=50, message="Must be between 8 and 50 characters")])
+                             InputRequired(), Length(min=8, max=50, message="Must be between 8 and 50 characters"), EqualTo('confirm_password', message='Passwords must match')])
     confirm_password = PasswordField('Confirm Password', render_kw={'placeholder': 'Confirm Password'}, validators=[
                                      InputRequired(), Length(min=8, max=50, message="Must be between 8 and 50 characters")])
     submit = SubmitField('Sign Up')
