@@ -11,8 +11,8 @@ from wtforms.validators import InputRequired, Length, EqualTo, NoneOf
 invalidInput = ["marit", "stian", "benjamin", "jørund"]
 
 class LoginForm(FlaskForm):
-    username = StringField('Username', render_kw={'placeholder': 'Username'}, validators=[InputRequired()])
-    password = PasswordField('Password', render_kw={'placeholder': 'Password'}, validators=[InputRequired()])
+    username = StringField('Username', render_kw={'placeholder': 'Username'})
+    password = PasswordField('Password', render_kw={'placeholder': 'Password'})
     remember_me = BooleanField('Remember me') # TODO: It would be nice to have this feature implemented, probably by using cookies
     submit = SubmitField('Sign In')
 
