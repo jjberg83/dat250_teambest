@@ -17,7 +17,7 @@ def index():
     form = IndexForm()
     
     if form.login.validate_on_submit() and form.login.is_submitted() and form.login.submit.data:
-        print("inni første if")
+        
         user = query_db('SELECT * FROM Users WHERE username="{}";'.format(form.login.username.data), one=True)
         print("user is ", user)
         if user == None:
@@ -28,14 +28,14 @@ def index():
             flash('Sorry, wrong password!')
 
     elif form.register.validate_on_submit() and form.register.is_submitted() and form.register.submit.data:
-        print("inni andre if")
+        
         flash("New user registered!")
         query_db('INSERT INTO Users (username, first_name, last_name, password) VALUES("{}", "{}", "{}", "{}");'.format(form.register.username.data, form.register.first_name.data,
          form.register.last_name.data, form.register.password.data))
         print(form.register.username.data)
         print(form.register.password.data)
         return redirect(url_for('index'))
-    print("her går vi straks inn på render_template")
+    
     
     
     return render_template('index.html', title='Welcome', form=form)
