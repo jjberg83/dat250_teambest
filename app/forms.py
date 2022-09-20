@@ -1,8 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField, FormField, TextAreaField, FileField
 from wtforms.fields.html5 import DateField
-from wtforms.validators import InputRequired, Length, EqualTo, NoneOf, DataRequired
-from flask_wtf.recaptcha import RecaptchaField
+from wtforms.validators import InputRequired, Length, EqualTo, NoneOf
 
 # defines all forms in the application, these will be instantiated by the template,
 # and the routes.py will read the values of the fields
@@ -18,22 +17,20 @@ class LoginForm(FlaskForm):
     submit = SubmitField('Sign In')
 
 class RegisterForm(FlaskForm):
-    first_name = StringField('First Name', render_kw={'placeholder': 'First Name'}, validators=[DataRequired(), NoneOf(invalidInput, message="Invalid input")])
-    last_name = StringField('Last Name', render_kw={'placeholder': 'Last Name'}, validators=[DataRequired()])
+    first_name = StringField('First Name', render_kw={'placeholder': 'First Name'}, validators=[InputRequired(), NoneOf(invalidInput, message="Invalid input")])
+    last_name = StringField('Last Name', render_kw={'placeholder': 'Last Name'}, validators=[InputRequired()])
 
     username = StringField('Username', render_kw={'placeholder': 'Username'}, validators=[
-                           DataRequired(), Length(min=5, max=50, message="Must be between 5 and 50 characters")])
+                           InputRequired(), Length(min=5, max=50, message="Must be between 5 and 50 characters")])
     password = PasswordField('Password', render_kw={'placeholder': 'Password'}, validators=[
-                             DataRequired(), Length(min=8, max=50, message="Must be between 8 and 50 characters"), EqualTo('confirm_password', message='Passwords must match')])
+                             InputRequired(), Length(min=8, max=50, message="Must be between 8 and 50 characters"), EqualTo('confirm_password', message='Passwords must match')])
     confirm_password = PasswordField('Confirm Password', render_kw={'placeholder': 'Confirm Password'}, validators=[
-                                     DataRequired(), Length(min=8, max=50, message="Must be between 8 and 50 characters")])
-    recaptcha = RecaptchaField()
+                                     InputRequired(), Length(min=8, max=50, message="Must be between 8 and 50 characters")])
     submit = SubmitField('Sign Up')
 
 class IndexForm(FlaskForm):
     login = FormField(LoginForm)
     register = FormField(RegisterForm)
-    #recaptcha = RecaptchaField()
 
 class PostForm(FlaskForm):
     content = TextAreaField('New Post', render_kw={'placeholder': 'What are you thinking about?'})
