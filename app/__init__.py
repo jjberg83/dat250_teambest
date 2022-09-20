@@ -4,6 +4,7 @@ from flask_bootstrap import Bootstrap
 #from flask_login import LoginManager
 import sqlite3
 import os
+from flask_recaptcha import ReCaptcha
 
 # create and configure app
 app = Flask(__name__)
@@ -12,6 +13,11 @@ app.config.from_object(Config)
 
 # TODO: Handle login management better, maybe with flask_login?
 #login = LoginManager(app)
+
+app.config['RECAPTCHA_PUBLIC_KEY'] = '6Le8iA8iAAAAAPhyntZcF2vaR08uOth1Lw-j6aB6'
+app.config['RECAPTCHA_PRIVATE_KEY'] = '6Le8iA8iAAAAAF1DLx6EeX6G4jdZwZ2pbnDfJ9ZJ'
+ReCaptcha(app)
+
 
 # get an instance of the db
 def get_db():
