@@ -16,25 +16,26 @@ from wtforms.validators import InputRequired, Length
 def index():
     form = IndexForm()
     
-    if form.login.validate_on_submit() and form.login.is_submitted() and form.login.submit.data:
-        
-        user = query_db('SELECT * FROM Users WHERE username="{}";'.format(form.login.username.data), one=True)
-        print("user is ", user)
-        if user == None:
-            flash('Sorry, this user does not exist!')
-        elif user['password'] == form.login.password.data:
-            return redirect(url_for('stream', username=form.login.username.data))
-        else:
-            flash('Sorry, wrong password!')
+    if form.login.is_submitted() and form.login.submit.data:
+        print("BØRREEEEE BØLLEEEFRØØØ")
+        if not form.login.validate_on_submit():
+            user = query_db('SELECT * FROM Users WHERE username="{}";'.format(form.login.username.data), one=True)
+            print("user is ", user)
+            if user == None:
+                flash('Wrong username and/or password')
+            elif user['password'] == form.login.password.data:
+                return redirect(url_for('stream', username=form.login.username.data))
+            else:
+                flash('Wrong username and/or password')
 
-    elif form.register.validate_on_submit() and form.register.is_submitted() and form.register.submit.data:
-        
-        flash("New user registered!")
-        query_db('INSERT INTO Users (username, first_name, last_name, password) VALUES("{}", "{}", "{}", "{}");'.format(form.register.username.data, form.register.first_name.data,
-         form.register.last_name.data, form.register.password.data))
-        print(form.register.username.data)
-        print(form.register.password.data)
-        return redirect(url_for('index'))
+    elif form.register.is_submitted() and form.register.submit.data:
+        if form.register.validate_on_submit():
+            flash("New user registered!")
+            query_db('INSERT INTO Users (username, first_name, last_name, password) VALUES("{}", "{}", "{}", "{}");'.format(form.register.username.data, form.register.first_name.data,
+            form.register.last_name.data, form.register.password.data))
+            print(form.register.username.data)
+            print(form.register.password.data)
+            return redirect(url_for('index'))
     
     
     
