@@ -18,15 +18,12 @@ class LoginForm(FlaskForm):
     submit = SubmitField('Sign In')
 
 class RegisterForm(FlaskForm):
-    first_name = StringField('First Name', render_kw={'placeholder': 'First Name'}, validators=[DataRequired(), NoneOf(invalidInput, message="Invalid input")])
-    last_name = StringField('Last Name', render_kw={'placeholder': 'Last Name'}, validators=[DataRequired()])
+    first_name = StringField('First Name', render_kw={'placeholder': 'First Name'})
+    last_name = StringField('Last Name', render_kw={'placeholder': 'Last Name'})
 
-    username = StringField('Username', render_kw={'placeholder': 'Username'}, validators=[
-                           DataRequired(), Length(min=5, max=50, message="Must be between 5 and 50 characters")])
-    password = PasswordField('Password', render_kw={'placeholder': 'Password'}, validators=[
-                             DataRequired(), Length(min=8, max=50, message="Must be between 8 and 50 characters"), EqualTo('confirm_password', message='Passwords must match')])
-    confirm_password = PasswordField('Confirm Password', render_kw={'placeholder': 'Confirm Password'}, validators=[
-                                     DataRequired(), Length(min=8, max=50, message="Must be between 8 and 50 characters")])
+    username = StringField('Username', render_kw={'placeholder': 'Username'})
+    password = PasswordField('Password', render_kw={'placeholder': 'Password'})
+    confirm_password = PasswordField('Confirm Password', render_kw={'placeholder': 'Confirm Password'})
     recaptcha = RecaptchaField()
     submit = SubmitField('Sign Up')
 
