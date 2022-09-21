@@ -17,10 +17,11 @@ def index():
     form = IndexForm()
     
     if form.login.is_submitted() and form.login.submit.data:
-        print("BØRREEEEE BØLLEEEFRØØØ")
         if not form.login.validate_on_submit():
+            print("INN PÅ FORM LOGIN")
             user = query_db('SELECT * FROM Users WHERE username="{}";'.format(form.login.username.data), one=True)
             print("user is ", user)
+            print("form.login.username.data er: ", form.login.username.data)
             if user == None:
                 flash('Wrong username and/or password')
             elif user['password'] == form.login.password.data:
@@ -30,6 +31,8 @@ def index():
 
     elif form.register.is_submitted() and form.register.submit.data:
         if form.register.validate_on_submit():
+            print(form.register.validate_on_submit())
+            print("INN PÅ REGISTER LOGIN")
             flash("New user registered!")
             query_db('INSERT INTO Users (username, first_name, last_name, password) VALUES("{}", "{}", "{}", "{}");'.format(form.register.username.data, form.register.first_name.data,
             form.register.last_name.data, form.register.password.data))
@@ -47,15 +50,18 @@ def index():
 def stream(username):
     form = PostForm()
     user = query_db('SELECT * FROM Users WHERE username="{}";'.format(username), one=True)
+    print("user is ", user)
+    #print("STREAM: form.login.username.data er: ", form.login.username.data) denne finnes ikke her
     if form.is_submitted():
+        print("inn på form.is_submitted()")
         if form.image.data:
+            print("inn på form.image.data")
             path = os.path.join(app.config['UPLOAD_PATH'], form.image.data.filename)
             form.image.data.save(path)
 
 
         query_db('INSERT INTO Posts (u_id, content, image, creation_time) VALUES({}, "{}", "{}", \'{}\');'.format(user['id'], form.content.data, form.image.data.filename, datetime.now()))
         return redirect(url_for('stream', username=username))
-
     posts = query_db('SELECT p.*, u.*, (SELECT COUNT(*) FROM Comments WHERE p_id=p.id) AS cc FROM Posts AS p JOIN Users AS u ON u.id=p.u_id WHERE p.u_id IN (SELECT u_id FROM Friends WHERE f_id={0}) OR p.u_id IN (SELECT f_id FROM Friends WHERE u_id={0}) OR p.u_id={0} ORDER BY p.creation_time DESC;'.format(user['id']))
     return render_template('stream.html', title='Stream', username=username, form=form, posts=posts)
 
