@@ -15,6 +15,7 @@ class LoginForm(FlaskForm):
     username = StringField('Username', render_kw={'placeholder': 'Username'})
     password = PasswordField('Password', render_kw={'placeholder': 'Password'})
     remember_me = BooleanField('Remember me') # TODO: It would be nice to have this feature implemented, probably by using cookies
+    recaptcha = RecaptchaField()
     submit = SubmitField('Sign In')
 
 class RegisterForm(FlaskForm):
