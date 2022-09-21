@@ -1,3 +1,5 @@
+https://www.digitalocean.com/community/tutorials/how-to-add-authentication-to-your-app-with-flask-login
+
 #1 novalidate i index.html--
 
 På linje 19 og 35 ser vi at det står novalidate i slutten av form taggen
