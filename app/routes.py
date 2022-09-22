@@ -1,5 +1,6 @@
 from flask import Flask, render_template, flash, redirect, url_for, request
-from app import app, query_db, load_user, login_manager
+from app import app, query_db, load_user, login_manager, User
+from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from app.forms import IndexForm, PostForm, FriendsForm, ProfileForm, CommentsForm
 from datetime import datetime
 import os
@@ -10,6 +11,9 @@ import zlib
 from flask_wtf import FlaskForm
 from wtforms import (StringField, PasswordField, SubmitField, TextAreaField, IntegerField, BooleanField, RadioField)
 from wtforms.validators import InputRequired, Length
+
+
+from flask_login import UserMixin
 
 
 #########################################
@@ -33,9 +37,8 @@ def decrypt(encMessage):
 public_key, private_key = createKeys()
 
 # this file contains all the different routes, and the logic for communicating with the database
-# @login_manager.user_loader
-# def load_user(username):
-#     return user.Get(username)
+
+    #return app.config["user"].get(username)
 
 #load_user("123456789")
 
@@ -47,12 +50,17 @@ def index():
     
     if form.login.is_submitted() and form.login.submit.data:
         if not form.login.validate_on_submit():
-            user = query_db('SELECT * FROM Users WHERE username="{}";'.format(form.login.username.data), one=True)
-            print("user is ", user)
+            user = User()
+            sql = query_db('SELECT * FROM Users WHERE username="{}";'.format(form.login.username.data), one=True)
+            id = sql["id"]
+            user.SetUser(id)
             if user == None:
                 flash('Wrong username and/or password')
-            elif user['password'] == form.login.password.data:
-                return redirect(url_for('stream', username=encrypt(form.login.username.data, private_key)))
+            elif user.password == form.login.password.data:
+                login_user(user, remember = True)
+                print("this is current user id: ", current_user.id)
+                #return redirect(url_for('stream', username=encrypt(form.login.username.data, private_key)))
+                return redirect(url_for('stream'))
             else:
                 flash('Wrong username and/or password')
 
@@ -68,9 +76,12 @@ def index():
     return render_template('index.html', title='Welcome', form=form)
 
 # content stream page
-@app.route('/stream/<username>', methods=['GET', 'POST'])
-def stream(username):
-    username = decrypt(username)
+@app.route('/stream', methods=['GET', 'POST'])
+def stream():
+    #username = decrypt(username)
+    #username = "hyhyhyhy"
+    username = current_user.username
+    print("this is current user id: ", current_user.id)
     form = PostForm()
     user = query_db('SELECT * FROM Users WHERE username="{}";'.format(username), one=True)
     if form.is_submitted():

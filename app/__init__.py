@@ -14,23 +14,51 @@ app.config.from_object(Config)
 
 # TODO: Handle login management better, maybe with flask_login?
 login_manager = LoginManager(app)
+login_manager.login_message = "Please log in."
 # login_manager = LoginManager()
 # login_manager.init_app(app)
 
-class User:
+class User():
     def __init__(self):
-        self.user = {}
-    def Get(self, username):
-        self.user = query_db('SELECT * FROM Users WHERE username="{}";'.format(username), one=True)
+        self.id = ""
+        self.username = ""
+        self.f_name = ""
+        self.l_name = ""
+        self.password = ""
+        self.employment = ""
+        self.education = ""
+        self.song = ""
+        self.movie = ""
+        self.nationality = ""
+        self.birthday = ""
+        self.is_active = True
+
+    def SetUser(self, id):
+        sql = query_db('SELECT * FROM Users WHERE id="{}";'.format(id), one=True)
+        if sql != None:
+            self.id = sql["id"]
+            self.username = sql["username"]
+            self.f_name = sql["first_name"]
+            self.l_name = sql["last_name"]
+            self.password = sql["password"] 
+            self.employment = sql["employment"]
+            self.education = sql["education"]
+            self.music = sql["music"]
+            self.movie = sql["movie"]
+            self.nationality = sql["nationality"]
+            self.birthday = sql["birthday"]
+            self.is_active = True
+    def get_id(self):
+        return self.id
+
 
 #app.config["user"] = User()
 
 @login_manager.user_loader
-def load_user(username):
-    ""
-    return app.config["user"].Get(username)
-
-
+def load_user(id):
+    user = User()
+    user.SetUser(id)
+    return user
 
 app.config['RECAPTCHA_PUBLIC_KEY'] = '6Le8iA8iAAAAAPhyntZcF2vaR08uOth1Lw-j6aB6'
 app.config['RECAPTCHA_PRIVATE_KEY'] = '6Le8iA8iAAAAAF1DLx6EeX6G4jdZwZ2pbnDfJ9ZJ'
