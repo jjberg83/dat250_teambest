@@ -1,3 +1,5 @@
+https://flask-login.readthedocs.io/en/latest/
+
 # social-insecurity
 
 This project defines a social media web application lacking many key security features. The goal is to identify as many of these as possible, and then proceed to patch them. It can also be used for practice from the perspective of an attacker.
