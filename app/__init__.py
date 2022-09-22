@@ -1,9 +1,10 @@
 from flask import Flask, g
 from config import Config
 from flask_bootstrap import Bootstrap
-#from flask_login import LoginManager
+from flask_login import LoginManager
 import sqlite3
 import os
+
 from flask_recaptcha import ReCaptcha
 
 # create and configure app
@@ -12,7 +13,24 @@ Bootstrap(app)
 app.config.from_object(Config)
 
 # TODO: Handle login management better, maybe with flask_login?
-#login = LoginManager(app)
+login_manager = LoginManager(app)
+# login_manager = LoginManager()
+# login_manager.init_app(app)
+
+class User:
+    def __init__(self):
+        self.user = {}
+    def Get(self, username):
+        self.user = query_db('SELECT * FROM Users WHERE username="{}";'.format(username), one=True)
+
+#app.config["user"] = User()
+
+@login_manager.user_loader
+def load_user(username):
+    ""
+    return app.config["user"].Get(username)
+
+
 
 app.config['RECAPTCHA_PUBLIC_KEY'] = '6Le8iA8iAAAAAPhyntZcF2vaR08uOth1Lw-j6aB6'
 app.config['RECAPTCHA_PRIVATE_KEY'] = '6Le8iA8iAAAAAF1DLx6EeX6G4jdZwZ2pbnDfJ9ZJ'
