@@ -1,3 +1,4 @@
+from codecs import IncrementalDecoder
 from flask import Flask, render_template, flash, redirect, url_for, request
 from app import app, query_db
 from app.forms import IndexForm, PostForm, FriendsForm, ProfileForm, CommentsForm
@@ -49,6 +50,7 @@ def index():
 @app.route('/stream/<username>', methods=['GET', 'POST'])
 def stream(username):
     form = PostForm()
+    indexForm = IndexForm()
     user = query_db('SELECT * FROM Users WHERE username="{}";'.format(username), one=True)
     print("user is ", user)
     #print("STREAM: form.login.username.data er: ", form.login.username.data) denne finnes ikke her
@@ -62,8 +64,14 @@ def stream(username):
 
         query_db('INSERT INTO Posts (u_id, content, image, creation_time) VALUES({}, "{}", "{}", \'{}\');'.format(user['id'], form.content.data, form.image.data.filename, datetime.now()))
         return redirect(url_for('stream', username=username))
+        
     posts = query_db('SELECT p.*, u.*, (SELECT COUNT(*) FROM Comments WHERE p_id=p.id) AS cc FROM Posts AS p JOIN Users AS u ON u.id=p.u_id WHERE p.u_id IN (SELECT u_id FROM Friends WHERE f_id={0}) OR p.u_id IN (SELECT f_id FROM Friends WHERE u_id={0}) OR p.u_id={0} ORDER BY p.creation_time DESC;'.format(user['id']))
-    return render_template('stream.html', title='Stream', username=username, form=form, posts=posts)
+    if indexForm.login.submit.data:
+        print("Innlogget")
+        return render_template('stream.html', title='Stream', username=username, form=form, posts=posts)
+    elif not indexForm.login.submit.data:
+        print("Ikke innlogget")
+        return redirect(url_for('index'))
 
 # comment page for a given post and user.
 @app.route('/comments/<username>/<int:p_id>', methods=['GET', 'POST'])
