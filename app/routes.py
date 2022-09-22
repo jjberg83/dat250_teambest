@@ -38,10 +38,6 @@ public_key, private_key = createKeys()
 
 # this file contains all the different routes, and the logic for communicating with the database
 
-    #return app.config["user"].get(username)
-
-#load_user("123456789")
-
 # home page/login/registration
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/index', methods=['GET', 'POST'])
@@ -57,9 +53,7 @@ def index():
             if user == None:
                 flash('Wrong username and/or password')
             elif user.password == form.login.password.data:
-                login_user(user, remember = True)
-                print("this is current user id: ", current_user.id)
-                #return redirect(url_for('stream', username=encrypt(form.login.username.data, private_key)))
+                login_user(user, remember = True) #REMEMBER FIX
                 return redirect(url_for('stream'))
             else:
                 flash('Wrong username and/or password')
@@ -78,8 +72,6 @@ def index():
 # content stream page
 @app.route('/stream', methods=['GET', 'POST'])
 def stream():
-    #username = decrypt(username)
-    #username = "hyhyhyhy"
     username = current_user.username
     print("this is current user id: ", current_user.id)
     form = PostForm()
@@ -108,8 +100,11 @@ def comments(username, p_id):
     return render_template('comments.html', title='Comments', username=username, form=form, post=post, comments=all_comments)
 
 # page for seeing and adding friends
-@app.route('/friends/<username>', methods=['GET', 'POST'])
-def friends(username):
+#@app.route('/friends/<username>', methods=['GET', 'POST'])
+@app.route('/friends/', methods=['GET', 'POST'])
+#def friends(username):
+def friends():
+    username = current_user.username
     form = FriendsForm()
     user = query_db('SELECT * FROM Users WHERE username="{}";'.format(username), one=True)
     if form.is_submitted():
@@ -124,13 +119,18 @@ def friends(username):
 
 # see and edit detailed profile information of a user
 @app.route('/profile/<username>', methods=['GET', 'POST'])
-def profile(username):
+@app.route('/profile', methods=['GET', 'POST'])
+def profile(username = ""):
+    can_edit = False
+    if username =="":
+        can_edit = True
+        username = current_user.username
     form = ProfileForm()
     if form.is_submitted():
         query_db('UPDATE Users SET education="{}", employment="{}", music="{}", movie="{}", nationality="{}", birthday=\'{}\' WHERE username="{}" ;'.format(
             form.education.data, form.employment.data, form.music.data, form.movie.data, form.nationality.data, form.birthday.data, username
         ))
-        return redirect(url_for('profile', username=username))
+        return redirect(url_for('profile', username=username, can_edit = can_edit))
     
     user = query_db('SELECT * FROM Users WHERE username="{}";'.format(username), one=True)
-    return render_template('profile.html', title='profile', username=username, user=user, form=form)
+    return render_template('profile.html', title='profile', username=username, user=user, form=form, can_edit = can_edit)
