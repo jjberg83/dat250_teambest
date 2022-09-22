@@ -1,3 +1,6 @@
+TIL BENNY BEST
+https://github.com/do-community/flask_auth_scotch/tree/master/project
+
 #1 novalidate i index.html--
 
 På linje 19 og 35 ser vi at det står novalidate i slutten av form taggen
