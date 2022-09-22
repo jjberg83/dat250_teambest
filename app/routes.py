@@ -12,31 +12,12 @@ from flask_wtf import FlaskForm
 from wtforms import (StringField, PasswordField, SubmitField, TextAreaField, IntegerField, BooleanField, RadioField)
 from wtforms.validators import InputRequired, Length
 
-
-from flask_login import UserMixin
-
-
-#########################################
-#           KEY AND ENCRYPTION          #
-#     Stash in different folder l8r     #
-#########################################
-def createKeys():
-    return rsa.newkeys(512) #returns a public and a private key
-
-def encrypt(myStr, publicKey):
-    return myStr
-	# encMessage = rsa.encrypt(myStr.encode(),
-	#                          publicKey)
-	#return encMessage
-
-def decrypt(encMessage):
-    return encMessage
-	# decMessage = rsa.decrypt(encMessage, privateKey).decode()
-	#return decMessage
-
-public_key, private_key = createKeys()
-
 # this file contains all the different routes, and the logic for communicating with the database
+
+@app.route('/logout') #Denne routen blir kalt når du trykker på logout knappen
+def logout():
+    logout_user() # Vi logger ut bruker...
+    return redirect("/index") #... og sender bruker til startsiden
 
 # home page/login/registration
 @app.route('/', methods=['GET', 'POST'])
@@ -46,14 +27,14 @@ def index():
     
     if form.login.is_submitted() and form.login.submit.data:
         if not form.login.validate_on_submit():
-            user = User()
-            sql = query_db('SELECT * FROM Users WHERE username="{}";'.format(form.login.username.data), one=True)
-            id = sql["id"]
-            user.SetUser(id)
+            user = User() #Vi lager en tom bruker
+            sql = query_db('SELECT * FROM Users WHERE username="{}";'.format(form.login.username.data), one=True) #Finner informasjon om navnet du skriver inn i "Username" feltet i index"...
+            id = sql["id"] #...Trekker ut brukerens ID fra sql requesten...
+            user.SetUser(id) #...og bruker ID-en til å sette all annen informasjon om brukeren.
             if user == None:
-                flash('Wrong username and/or password')
+                flash('Wrong username and/or password') #Vi skriver dette for ikke å røpe om den som prøver å logge seg inn har skrevet noe rett...
             elif user.password == form.login.password.data:
-                login_user(user, remember = True) #REMEMBER FIX
+                login_user(user, remember = form.login.remember_me.data) #Dersom remember me er hooket av, vil brukeren bli remembered til neste gang
                 return redirect(url_for('stream'))
             else:
                 flash('Wrong username and/or password')
@@ -72,20 +53,21 @@ def index():
 # content stream page
 @app.route('/stream', methods=['GET', 'POST'])
 def stream():
-    username = current_user.username
-    print("this is current user id: ", current_user.id)
-    form = PostForm()
-    user = query_db('SELECT * FROM Users WHERE username="{}";'.format(username), one=True)
-    if form.is_submitted():
-        if form.image.data:
-            path = os.path.join(app.config['UPLOAD_PATH'], form.image.data.filename)
-            form.image.data.save(path)
+    if current_user.is_active:
+        username = current_user.username
+        form = PostForm()
+        user = query_db('SELECT * FROM Users WHERE username="{}";'.format(username), one=True)
+        if form.is_submitted():
+            if form.image.data:
+                path = os.path.join(app.config['UPLOAD_PATH'], form.image.data.filename)
+                form.image.data.save(path)
 
-        query_db('INSERT INTO Posts (u_id, content, image, creation_time) VALUES({}, "{}", "{}", \'{}\');'.format(user['id'], form.content.data, form.image.data.filename, datetime.now()))
-        return redirect(url_for('stream', username=username))
+            query_db('INSERT INTO Posts (u_id, content, image, creation_time) VALUES({}, "{}", "{}", \'{}\');'.format(user['id'], form.content.data, form.image.data.filename, datetime.now()))
+            return redirect(url_for('stream', username=username))
 
-    posts = query_db('SELECT p.*, u.*, (SELECT COUNT(*) FROM Comments WHERE p_id=p.id) AS cc FROM Posts AS p JOIN Users AS u ON u.id=p.u_id WHERE p.u_id IN (SELECT u_id FROM Friends WHERE f_id={0}) OR p.u_id IN (SELECT f_id FROM Friends WHERE u_id={0}) OR p.u_id={0} ORDER BY p.creation_time DESC;'.format(user['id']))
-    return render_template('stream.html', title='Stream', username=username, form=form, posts=posts)
+        posts = query_db('SELECT p.*, u.*, (SELECT COUNT(*) FROM Comments WHERE p_id=p.id) AS cc FROM Posts AS p JOIN Users AS u ON u.id=p.u_id WHERE p.u_id IN (SELECT u_id FROM Friends WHERE f_id={0}) OR p.u_id IN (SELECT f_id FROM Friends WHERE u_id={0}) OR p.u_id={0} ORDER BY p.creation_time DESC;'.format(user['id']))
+        return render_template('stream.html', title='Stream', username=username, form=form, posts=posts)
+    return redirect("/index")
 
 # comment page for a given post and user.
 @app.route('/comments/<username>/<int:p_id>', methods=['GET', 'POST'])
@@ -109,7 +91,7 @@ def friends():
     user = query_db('SELECT * FROM Users WHERE username="{}";'.format(username), one=True)
     if form.is_submitted():
         friend = query_db('SELECT * FROM Users WHERE username="{}";'.format(form.username.data), one=True)
-        if friend is None:
+        if friend is None: #Flash under var User does not exist, dette kan røpe hvilke rukernavn som ikke finnes...........
             flash('User does not exist')
         else:
             query_db('INSERT INTO Friends (u_id, f_id) VALUES({}, {});'.format(user['id'], friend['id']))
@@ -121,16 +103,18 @@ def friends():
 @app.route('/profile/<username>', methods=['GET', 'POST'])
 @app.route('/profile', methods=['GET', 'POST'])
 def profile(username = ""):
-    can_edit = False
-    if username =="":
-        can_edit = True
-        username = current_user.username
-    form = ProfileForm()
-    if form.is_submitted():
-        query_db('UPDATE Users SET education="{}", employment="{}", music="{}", movie="{}", nationality="{}", birthday=\'{}\' WHERE username="{}" ;'.format(
-            form.education.data, form.employment.data, form.music.data, form.movie.data, form.nationality.data, form.birthday.data, username
-        ))
-        return redirect(url_for('profile', username=username, can_edit = can_edit))
-    
-    user = query_db('SELECT * FROM Users WHERE username="{}";'.format(username), one=True)
-    return render_template('profile.html', title='profile', username=username, user=user, form=form, can_edit = can_edit)
+    if current_user.is_active:
+        can_edit = False
+        if username =="":
+            can_edit = True
+            username = current_user.username
+        form = ProfileForm()
+        if form.is_submitted():
+            query_db('UPDATE Users SET education="{}", employment="{}", music="{}", movie="{}", nationality="{}", birthday=\'{}\' WHERE username="{}" ;'.format(
+                form.education.data, form.employment.data, form.music.data, form.movie.data, form.nationality.data, form.birthday.data, username
+            ))
+            return redirect(url_for('profile', username=username, can_edit = can_edit))
+        
+        user = query_db('SELECT * FROM Users WHERE username="{}";'.format(username), one=True)
+        return render_template('profile.html', title='profile', username=username, user=user, form=form, can_edit = can_edit)
+    return redirect("/index")
