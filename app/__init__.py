@@ -54,7 +54,7 @@ class User():
 
 #app.config["user"] = User()
 
-@login_manager.user_loader
+@login_manager.user_loader #Denne kaller vi manuelt i route, i tillegg kaller den seg selv med ID som argument automatisk når en side blir lastet på my
 def load_user(id):
     user = User()
     user.SetUser(id)
