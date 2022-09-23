@@ -104,17 +104,24 @@ def friends():
 @app.route('/profile', methods=['GET', 'POST'])
 def profile(username = ""):
     if current_user.is_active:
+        print("jalla balla")
         can_edit = False
         if username =="":
+            print("edit knapp skrus på")
             can_edit = True
             username = current_user.username
         form = ProfileForm()
-        if form.is_submitted():
-            query_db('UPDATE Users SET education="{}", employment="{}", music="{}", movie="{}", nationality="{}", birthday=\'{}\' WHERE username="{}" ;'.format(
-                form.education.data, form.employment.data, form.music.data, form.movie.data, form.nationality.data, form.birthday.data, username
-            ))
-            return redirect(url_for('profile', username=username, can_edit = can_edit))
-        
+        if form.is_submitted() and form.submit.data:
+            print("forbi første hinder")
+            if form.validate_on_submit():
+                print("Form er kun validert og submitta")
+                query_db('UPDATE Users SET education="{}", employment="{}", music="{}", movie="{}", nationality="{}", birthday=\'{}\' WHERE username="{}" ;'.format(
+                    form.education.data, form.employment.data, form.music.data, form.movie.data, form.nationality.data, form.birthday.data, username
+                ))
+                print("form er validert og submitta. Passert database request")
+                return redirect(url_for('profile', username=username, can_edit = can_edit))
+        print("sannsynligvis inn her")
         user = query_db('SELECT * FROM Users WHERE username="{}";'.format(username), one=True)
         return render_template('profile.html', title='profile', username=username, user=user, form=form, can_edit = can_edit)
+    print("rett til index")
     return redirect("/index")
