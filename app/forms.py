@@ -61,15 +61,10 @@ class FriendsForm(FlaskForm):
 
 class ProfileForm(FlaskForm):
     # Legger til maks lengde under -stian
-    education = StringField('Education', render_kw={'placeholder': 'Highest education'}
-    , validators = [Length(min = 1, max = 50, message='Must be between 1 and 50 charakters')])
-    employment = StringField('Employment', render_kw={'placeholder': 'Current employment'}
-    , validators = [Length(min = 1, max = 50, message='Must be between 1 and 50 charakters')])
-    music = StringField('Favorite song', render_kw={'placeholder': 'Favorite song'}
-    , validators = [Length(min = 1, max = 50, message='Must be between 1 and 50 charakters')])
-    movie = StringField('Favorite movie', render_kw={'placeholder': 'Favorite movie'}
-    , validators = [Length(min = 1, max = 50, message='Must be between 1 and 50 charakters')])
-    nationality = StringField('Nationality', render_kw={'placeholder': 'Your nationality'}
-    , validators = [Length(min = 1, max = 50, message='Must be between 1 and 50 charakters')])
+    education = StringField('Education', render_kw={'placeholder': 'Highest education'}, validators = [Length(min = 1, max = 50, message='Must be between 1 and 50 charakters')])
+    employment = StringField('Employment', render_kw={'placeholder': 'Current employment'}, validators = [Length(min = 1, max = 50, message='Must be between 1 and 50 charakters')])
+    music = StringField('Favorite song', render_kw={'placeholder': 'Favorite song'}, validators = [Length(min = 1, max = 50, message='Must be between 1 and 50 charakters')])
+    movie = StringField('Favorite movie', render_kw={'placeholder': 'Favorite movie'}, validators = [Length(min = 1, max = 50, message='Must be between 1 and 50 charakters')])
+    nationality = StringField('Nationality', render_kw={'placeholder': 'Your nationality'}, validators = [Length(min = 1, max = 50, message='Must be between 1 and 50 charakters')])
     birthday = DateField('Birthday')
     submit = SubmitField('Update Profile')
