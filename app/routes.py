@@ -16,10 +16,10 @@ from wtforms.validators import InputRequired, Length
 
 # this file contains all the different routes, and the logic for communicating with the database
 
-@app.route('/logout') #Denne routen blir kalt når du trykker på logout knappen
+@app.route('/logout') # This route is called when you press the Log Out button found on line 50 in base.html
 def logout():
-    logout_user() # Vi logger ut bruker...
-    return redirect("/index") #... og sender bruker til startsiden
+    logout_user() # User is logged out...
+    return redirect("/index") #... and sent to the 'index' route
 
 # home page/login/registration
 @app.route('/', methods=['GET', 'POST'])
@@ -29,6 +29,7 @@ def index():
     
     if form.login.is_submitted() and form.login.submit.data:
         if not form.login.validate_on_submit():
+
             user = User() #Vi lager en tom bruker
             sql = query_db('SELECT * FROM Users WHERE username="{}";'.format(form.login.username.data), one=True) #Finner informasjon om navnet du skriver inn i "Username" feltet i index"...
             id = sql["id"] #...Trekker ut brukerens ID fra sql requesten...
@@ -48,6 +49,8 @@ def index():
             elif inserted_pw_hash.replace("\\", "") == correct_pw_hash.replace("\\", ""):
             #elif user.password == form.login.password.data:
                 login_user(user, remember = form.login.remember_me.data) #Dersom remember me er hooket av, vil brukeren bli remembered til neste gang
+
+
                 return redirect(url_for('stream'))
             else:
                 flash('Wrong username and/or password')
@@ -103,8 +106,8 @@ def friends():
     user = query_db('SELECT * FROM Users WHERE username="{}";'.format(username), one=True)
     if form.is_submitted():
         friend = query_db('SELECT * FROM Users WHERE username="{}";'.format(form.username.data), one=True)
-        if friend is None: #Flash under var User does not exist, dette kan røpe hvilke rukernavn som ikke finnes...........
-            flash('User does not exist')
+        if friend is None:
+            flash('Something went wrong')
         else:
             query_db('INSERT INTO Friends (u_id, f_id) VALUES({}, {});'.format(user['id'], friend['id']))
     
