@@ -91,8 +91,8 @@ def friends():
     user = query_db('SELECT * FROM Users WHERE username="{}";'.format(username), one=True)
     if form.is_submitted():
         friend = query_db('SELECT * FROM Users WHERE username="{}";'.format(form.username.data), one=True)
-        if friend is None: # Flash under was 'User does not exist', this can reveal which usernames do not exit (and therefore, which ones do...)
-            flash('User does not exist')
+        if friend is None:
+            flash('Something went wrong')
         else:
             query_db('INSERT INTO Friends (u_id, f_id) VALUES({}, {});'.format(user['id'], friend['id']))
     

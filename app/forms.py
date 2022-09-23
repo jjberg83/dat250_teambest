@@ -11,15 +11,22 @@ from flask_wtf.recaptcha.fields import RecaptchaField
 invalidInput = ["105 OR 1=1", "name'; DELETE FROM items; --"]
 
 class LoginForm(FlaskForm):
-    username = StringField('Username', render_kw={'placeholder': 'Username'})
-    password = PasswordField('Password', render_kw={'placeholder': 'Password'})
+    username = StringField('Username', render_kw={'placeholder': 'Username'}
+    , validators=[DataRequired(), NoneOf(invalidInput, message='Wrong username')]) # Redigert. -stian
+    password = PasswordField('Password', render_kw={'placeholder': 'Password'}
+    , validators=[DataRequired(), NoneOf(invalidInput, message='Wrong password')]) # redigert. -stian
+
     remember_me = BooleanField('Remember me') # TODO: It would be nice to have this feature implemented, probably by using cookies
     recaptcha = RecaptchaField()
     submit = SubmitField('Sign In')
 
 class RegisterForm(FlaskForm):
-    first_name = StringField('First Name', render_kw={'placeholder': 'First Name'}, validators=[DataRequired(), NoneOf(invalidInput, message="Invalid input")])
-    last_name = StringField('Last Name', render_kw={'placeholder': 'Last Name'}, validators=[DataRequired()])
+    # La til min og maks lengde på fornavn under: -stian
+    first_name = StringField('First Name', render_kw={'placeholder': 'First Name'}, validators=[DataRequired()
+    , Length(min = 1, max = 20, message = 'Too many characters'), NoneOf(invalidInput, message="Invalid input")]) # redigert -stian
+    # La til min og maks lengde på efternamn under: -stian
+    last_name = StringField('Last Name', render_kw={'placeholder': 'Last Name'}, validators=[DataRequired()
+    , Length(min = 1, max = 20, message = 'Too many characters')]) # redigert -stian
 
     username = StringField('Username', render_kw={'placeholder': 'Username'}, validators=[
                            DataRequired(), Length(min=5, max=50, message="Must be between 5 and 50 characters"), NoneOf(invalidInput, message="Invalid input")])
@@ -36,12 +43,16 @@ class IndexForm(FlaskForm):
     #recaptcha = RecaptchaField()
 
 class PostForm(FlaskForm):
-    content = TextAreaField('New Post', render_kw={'placeholder': 'What are you thinking about?'})
+    content = TextAreaField('New Post', render_kw={'placeholder': 'What are you thinking about?'}
+    , validators=[Length(min = 1, max = 1000, message="Message must be between 1 and 1000 charakters")])
+    # ^ Max length on a post. -stian
     image = FileField('Image')
     submit = SubmitField('Post')
 
 class CommentsForm(FlaskForm):
-    comment = TextAreaField('New Comment', render_kw={'placeholder': 'What do you have to say?'})
+    comment = TextAreaField('New Comment', render_kw={'placeholder': 'What do you have to say?'}
+    , validators=[Length(min = 1, max = 500, message='Comment must be between 1 and 500 charakters')])
+    # ^ Max length on a comment. -stian
     submit = SubmitField('Comment')
 
 class FriendsForm(FlaskForm):
@@ -49,10 +60,13 @@ class FriendsForm(FlaskForm):
     submit = SubmitField('Add Friend')
 
 class ProfileForm(FlaskForm):
-    education = StringField('Education', render_kw={'placeholder': 'Highest education'})
-    employment = StringField('Employment', render_kw={'placeholder': 'Current employment'})
-    music = StringField('Favorite song', render_kw={'placeholder': 'Favorite song'})
-    movie = StringField('Favorite movie', render_kw={'placeholder': 'Favorite movie'})
-    nationality = StringField('Nationality', render_kw={'placeholder': 'Your nationality'})
+    # Legger til maks lengde under -stian
+
+    education = StringField('Education', render_kw={'placeholder': 'Highest education'}, validators=[DataRequired(), Length(min=1,max=50, message='Must be between 1 and 50 charakters')])
+    employment = StringField('Employment', render_kw={'placeholder': 'Current employment'}, validators = [DataRequired(), Length(min = 1, max = 50, message='Must be between 1 and 50 charakters')])
+    music = StringField('Favorite song', render_kw={'placeholder': 'Favorite song'}, validators = [DataRequired(), Length(min = 1, max = 50, message='Must be between 1 and 50 charakters')])
+    movie = StringField('Favorite movie', render_kw={'placeholder': 'Favorite movie'}, validators = [DataRequired(), Length(min = 1, max = 50, message='Must be between 1 and 50 charakters')])
+    nationality = StringField('Nationality', render_kw={'placeholder': 'Your nationality'}, validators = [DataRequired(), Length(min = 1, max = 50, message='Must be between 1 and 50 charakters')])
+
     birthday = DateField('Birthday')
     submit = SubmitField('Update Profile')
