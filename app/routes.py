@@ -14,10 +14,10 @@ from wtforms.validators import InputRequired, Length
 
 # this file contains all the different routes, and the logic for communicating with the database
 
-@app.route('/logout') #Denne routen blir kalt når du trykker på logout knappen
+@app.route('/logout') # This route is called when you press the Log Out button found on line 50 in base.html
 def logout():
-    logout_user() # Vi logger ut bruker...
-    return redirect("/index") #... og sender bruker til startsiden
+    logout_user() # User is logged out...
+    return redirect("/index") #... and sent to the 'index' route
 
 # home page/login/registration
 @app.route('/', methods=['GET', 'POST'])
