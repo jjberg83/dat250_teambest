@@ -27,14 +27,14 @@ def index():
     
     if form.login.is_submitted() and form.login.submit.data:
         if not form.login.validate_on_submit():
-            user = User() #Vi lager en tom bruker
+            user = User() # Creates an empty user
             sql = query_db('SELECT * FROM Users WHERE username="{}";'.format(form.login.username.data), one=True) #Finner informasjon om navnet du skriver inn i "Username" feltet i index"...
-            id = sql["id"] #...Trekker ut brukerens ID fra sql requesten...
-            user.SetUser(id) #...og bruker ID-en til å sette all annen informasjon om brukeren.
+            id = sql["id"] # Pulls out the user´s ID from the SQL request...
+            user.SetUser(id) #...and uses the ID to set all attributes of the user
             if user == None:
-                flash('Wrong username and/or password') #Vi skriver dette for ikke å røpe om den som prøver å logge seg inn har skrevet noe rett...
+                flash('Wrong username and/or password') # Written like this to not give away any clues to the user trying to log in if they wrote something correctly...
             elif user.password == form.login.password.data:
-                login_user(user, remember = form.login.remember_me.data) #Dersom remember me er hooket av, vil brukeren bli remembered til neste gang
+                login_user(user, remember = form.login.remember_me.data) # If "Remember me" is checked, the user will be remembered the next time.
                 return redirect(url_for('stream'))
             else:
                 flash('Wrong username and/or password')
@@ -91,7 +91,7 @@ def friends():
     user = query_db('SELECT * FROM Users WHERE username="{}";'.format(username), one=True)
     if form.is_submitted():
         friend = query_db('SELECT * FROM Users WHERE username="{}";'.format(form.username.data), one=True)
-        if friend is None: #Flash under var User does not exist, dette kan røpe hvilke rukernavn som ikke finnes...........
+        if friend is None: # Flash under was 'User does not exist', this can reveal which usernames do not exit (and therefore, which ones do...)
             flash('User does not exist')
         else:
             query_db('INSERT INTO Friends (u_id, f_id) VALUES({}, {});'.format(user['id'], friend['id']))
