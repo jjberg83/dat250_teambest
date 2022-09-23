@@ -8,7 +8,7 @@ from flask_wtf.recaptcha.fields import RecaptchaField
 # TODO: Add validation, maybe use wtforms.validators??
 # TODO: There was some important security feature that wtforms provides, but I don't remember what; implement it
 
-invalidInput = ["marit", "stian", "benjamin", "jørund"]
+invalidInput = ["105 OR 1=1", "name'; DELETE FROM items; --"]
 
 class LoginForm(FlaskForm):
     username = StringField('Username', render_kw={'placeholder': 'Username'})
@@ -22,11 +22,11 @@ class RegisterForm(FlaskForm):
     last_name = StringField('Last Name', render_kw={'placeholder': 'Last Name'}, validators=[DataRequired()])
 
     username = StringField('Username', render_kw={'placeholder': 'Username'}, validators=[
-                           DataRequired(), Length(min=5, max=50, message="Must be between 5 and 50 characters")])
+                           DataRequired(), Length(min=5, max=50, message="Must be between 5 and 50 characters"), NoneOf(invalidInput, message="Invalid input")])
     password = PasswordField('Password', render_kw={'placeholder': 'Password'}, validators=[
-                             DataRequired(), Length(min=8, max=50, message="Must be between 8 and 50 characters"), EqualTo('confirm_password', message='Passwords must match')])
+                             DataRequired(), Length(min=8, max=50, message="Must be between 8 and 50 characters"), NoneOf(invalidInput, message="Invalid input"), EqualTo('confirm_password', message='Passwords must match')])
     confirm_password = PasswordField('Confirm Password', render_kw={'placeholder': 'Confirm Password'}, validators=[
-                                     DataRequired(), Length(min=8, max=50, message="Must be between 8 and 50 characters")])
+                                     DataRequired(), Length(min=8, max=50, message="Must be between 8 and 50 characters"), NoneOf(invalidInput, message="Invalid input")])
     recaptcha = RecaptchaField()
     submit = SubmitField('Sign Up')
 
