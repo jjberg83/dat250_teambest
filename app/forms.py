@@ -11,15 +11,22 @@ from flask_wtf.recaptcha.fields import RecaptchaField
 invalidInput = ["marit", "stian", "benjamin", "jørund"]
 
 class LoginForm(FlaskForm):
-    username = StringField('Username', render_kw={'placeholder': 'Username'})
-    password = PasswordField('Password', render_kw={'placeholder': 'Password'})
+    username = StringField('Username', render_kw={'placeholder': 'Username'}
+    , validators=[DataRequired(), NoneOf(invalidInput, message='Wrong username')]) # Redigert. -stian
+    password = PasswordField('Password', render_kw={'placeholder': 'Password'}
+    , validators=[DataRequired(), NoneOf(invalidInput, message='Wrong password')]) # redigert. -stian
+
     remember_me = BooleanField('Remember me') # TODO: It would be nice to have this feature implemented, probably by using cookies
     recaptcha = RecaptchaField()
     submit = SubmitField('Sign In')
 
 class RegisterForm(FlaskForm):
-    first_name = StringField('First Name', render_kw={'placeholder': 'First Name'}, validators=[DataRequired(), NoneOf(invalidInput, message="Invalid input")])
-    last_name = StringField('Last Name', render_kw={'placeholder': 'Last Name'}, validators=[DataRequired()])
+    # La til min og maks lengde på fornavn under: -stian
+    first_name = StringField('First Name', render_kw={'placeholder': 'First Name'}, validators=[DataRequired()
+    , Length(min = 5, max = 20, message = 'Too many characters'), NoneOf(invalidInput, message="Invalid input")]) # redigert -stian
+    # La til min og maks lengde på efternamn under: -stian
+    last_name = StringField('Last Name', render_kw={'placeholder': 'Last Name'}, validators=[DataRequired()
+    , Length(min = 5, max = 20, message = 'Too many characters')]) # redigert -stian
 
     username = StringField('Username', render_kw={'placeholder': 'Username'}, validators=[
                            DataRequired(), Length(min=5, max=50, message="Must be between 5 and 50 characters")])
@@ -36,12 +43,14 @@ class IndexForm(FlaskForm):
     #recaptcha = RecaptchaField()
 
 class PostForm(FlaskForm):
-    content = TextAreaField('New Post', render_kw={'placeholder': 'What are you thinking about?'})
+    content = TextAreaField('New Post', render_kw={'placeholder': 'What are you thinking about?'}, validators=[Length(max = 1000)])
+    # ^ Max length on a post. -stian
     image = FileField('Image')
     submit = SubmitField('Post')
 
 class CommentsForm(FlaskForm):
-    comment = TextAreaField('New Comment', render_kw={'placeholder': 'What do you have to say?'})
+    comment = TextAreaField('New Comment', render_kw={'placeholder': 'What do you have to say?'}, validators=[Length(max = 500)])
+    # ^ Max length on a comment. -stian
     submit = SubmitField('Comment')
 
 class FriendsForm(FlaskForm):
@@ -49,10 +58,11 @@ class FriendsForm(FlaskForm):
     submit = SubmitField('Add Friend')
 
 class ProfileForm(FlaskForm):
-    education = StringField('Education', render_kw={'placeholder': 'Highest education'})
-    employment = StringField('Employment', render_kw={'placeholder': 'Current employment'})
-    music = StringField('Favorite song', render_kw={'placeholder': 'Favorite song'})
-    movie = StringField('Favorite movie', render_kw={'placeholder': 'Favorite movie'})
-    nationality = StringField('Nationality', render_kw={'placeholder': 'Your nationality'})
+    # Legger til maks lengde under -stian
+    education = StringField('Education', render_kw={'placeholder': 'Highest education'}, validators = [Length(max = 50)])
+    employment = StringField('Employment', render_kw={'placeholder': 'Current employment'}, validators = [Length(max = 50)])
+    music = StringField('Favorite song', render_kw={'placeholder': 'Favorite song'}, validators = [Length(max = 50)])
+    movie = StringField('Favorite movie', render_kw={'placeholder': 'Favorite movie'}, validators = [Length(max = 50)])
+    nationality = StringField('Nationality', render_kw={'placeholder': 'Your nationality'}, validators = [Length(max = 50)])
     birthday = DateField('Birthday')
     submit = SubmitField('Update Profile')
