@@ -46,7 +46,7 @@ def index():
             print("Inserted PW string : ", inserted_pw_hash.replace("\\", ""))
             if user == None:
                 flash('Wrong username and/or password') #Vi skriver dette for ikke å røpe om den som prøver å logge seg inn har skrevet noe rett...
-            elif inserted_pw_hash.replace("\\", "") == correct_pw_hash.replace("\\", ""):
+            elif inserted_pw_hash.replace("\\", "").replace("'", "") == correct_pw_hash.replace("\\", "").replace("'", ""):
             #elif user.password == form.login.password.data:
                 login_user(user, remember = form.login.remember_me.data) #Dersom remember me er hooket av, vil brukeren bli remembered til neste gang
 
@@ -57,11 +57,16 @@ def index():
 
     elif form.register.is_submitted() and form.register.submit.data:
         if form.register.validate_on_submit():
+            user = User() #Vi lager en tom bruker
+            sql = query_db('SELECT * FROM Users WHERE username="{}";'.format(form.register.username.data), one=True) #Finner informasjon om navnet du skriver inn i "Username" feltet i index"...
+            if sql != None:
+                flash("Invalid username!")
+                return redirect(url_for('index'))
             flash("New user registered!")
             hashed_pw = hashlib.pbkdf2_hmac("sha256", form.register.password.data.encode(), form.register.username.data.encode(), 100000)
             query_db('INSERT INTO Users (username, first_name, last_name, password) VALUES("{}", "{}", "{}", "{}");'.format(form.register.username.data, form.register.first_name.data,
             form.register.last_name.data,  str(hashed_pw).replace("\\", "")))
-            return redirect(url_for('index'))
+            return redirect(url_for('index'), form=form)
     
     return render_template('index.html', title='Welcome', form=form)
 
@@ -84,7 +89,7 @@ def stream():
         return render_template('stream.html', title='Stream', username=username, form=form, posts=posts)
     return redirect("/index")
 
-# comment page for a given post and user.
+# comment page for a given post and user.b'aadasd'
 @app.route('/comments/<username>/<int:p_id>', methods=['GET', 'POST'])
 def comments(username, p_id):
     form = CommentsForm()
