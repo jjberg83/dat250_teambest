@@ -50,7 +50,7 @@ class PostForm(FlaskForm):
 
 class CommentsForm(FlaskForm):
     comment = TextAreaField('New Comment', render_kw={'placeholder': 'What do you have to say?'}
-    , validators=[Length(min = 1, max = 500, message='Comment must be between 1 and 500 charakters')])
+                            , validators=[InputRequired(),Length(min=1, max=500, message='Comment must be between 1 and 500 charakters')])
     # ^ Max length on a comment. -stian
     submit = SubmitField('Comment')
 

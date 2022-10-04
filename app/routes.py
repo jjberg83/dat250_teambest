@@ -89,8 +89,9 @@ def stream():
 def comments(username, p_id):
     form = CommentsForm()
     if form.is_submitted():
-        user = query_db('SELECT * FROM Users WHERE username="{}";'.format(username), one=True)
-        query_db('INSERT INTO Comments (p_id, u_id, comment, creation_time) VALUES({}, {}, "{}", \'{}\');'.format(p_id, user['id'], form.comment.data, datetime.now()))
+        if form.validate_on_submit():
+            user = query_db('SELECT * FROM Users WHERE username="{}";'.format(username), one=True)
+            query_db('INSERT INTO Comments (p_id, u_id, comment, creation_time) VALUES({}, {}, "{}", \'{}\');'.format(p_id, user['id'], form.comment.data, datetime.now()))
 
     post = query_db('SELECT * FROM Posts WHERE id={};'.format(p_id), one=True)
     all_comments = query_db('SELECT DISTINCT * FROM Comments AS c JOIN Users AS u ON c.u_id=u.id WHERE c.p_id={} ORDER BY c.creation_time DESC;'.format(p_id))
