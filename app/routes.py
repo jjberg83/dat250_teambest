@@ -28,7 +28,7 @@ def index():
     form = IndexForm()
     
     if form.login.is_submitted() and form.login.submit.data:
-        if not form.login.validate_on_submit():
+        if form.login.validate_on_submit():
 
             user = User() #Vi lager en tom bruker
             sql = query_db('SELECT * FROM Users WHERE username="{}";'.format(form.login.username.data), one=True) #Finner informasjon om navnet du skriver inn i "Username" feltet i index"...
