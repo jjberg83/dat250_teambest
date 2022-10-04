@@ -17,7 +17,7 @@ class LoginForm(FlaskForm):
     , validators=[DataRequired(), NoneOf(invalidInput, message='Wrong password')]) # redigert. -stian
 
     remember_me = BooleanField('Remember me') # TODO: It would be nice to have this feature implemented, probably by using cookies
-    recaptcha = RecaptchaField()
+
     submit = SubmitField('Sign In')
 
 class RegisterForm(FlaskForm):
@@ -44,7 +44,7 @@ class IndexForm(FlaskForm):
 
 class PostForm(FlaskForm):
     content = TextAreaField('New Post', render_kw={'placeholder': 'What are you thinking about?'}
-    , validators=[Length(min = 1, max = 1000, message="Message must be between 1 and 1000 charakters")])
+                            , validators=[DataRequired(),Length(min=1, max=1000, message="Message must be between 1 and 1000 charakters")])
     # ^ Max length on a post. -stian
     image = FileField('Image')
     submit = SubmitField('Post')
