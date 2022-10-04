@@ -43,8 +43,7 @@ class IndexForm(FlaskForm):
     #recaptcha = RecaptchaField()
 
 class PostForm(FlaskForm):
-    content = TextAreaField('New Post', render_kw={'placeholder': 'What are you thinking about?'}
-                            , validators=[DataRequired(),Length(min=1, max=1000, message="Message must be between 1 and 1000 charakters")])
+    content = TextAreaField('New Post', render_kw={'placeholder': 'What are you thinking about?'}, validators=[InputRequired(),Length(min=1, max=1000, message="Message must be between 1 and 1000 charakters")])
     # ^ Max length on a post. -stian
     image = FileField('Image')
     submit = SubmitField('Post')
