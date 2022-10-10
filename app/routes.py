@@ -74,7 +74,9 @@ def stream():
             if form.validate_on_submit():
                 print("VALID")
             else:
-                print("Not valid?")
+                flash("Post must be between 1 and 1000 characters")
+                posts = query_db('SELECT p.*, u.*, (SELECT COUNT(*) FROM Comments WHERE p_id=p.id) AS cc FROM Posts AS p JOIN Users AS u ON u.id=p.u_id WHERE p.u_id IN (SELECT u_id FROM Friends WHERE f_id={0}) OR p.u_id IN (SELECT f_id FROM Friends WHERE u_id={0}) OR p.u_id={0} ORDER BY p.creation_time DESC;'.format(user['id']))
+                return render_template('stream.html', title='Stream', username=username, form=form, posts = posts)
             if form.image.data:
                 if allowed_file(form.image.data.filename):
                     path = os.path.join(app.config['UPLOAD_PATH'], form.image.data.filename)
@@ -95,6 +97,10 @@ def stream():
 def comments(username, p_id):
     form = CommentsForm()
     if form.is_submitted():
+        if not form.validate_on_submit():
+            post = query_db('SELECT * FROM Posts WHERE id={};'.format(p_id), one=True)
+            all_comments = query_db('SELECT DISTINCT * FROM Comments AS c JOIN Users AS u ON c.u_id=u.id WHERE c.p_id={} ORDER BY c.creation_time DESC;'.format(p_id))
+            return render_template('comments.html', title='Comments', username=username, form=form, post=post, comments=all_comments)
         user = query_db('SELECT * FROM Users WHERE username="{}";'.format(username), one=True)
         query_db('INSERT INTO Comments (p_id, u_id, comment, creation_time) VALUES({}, {}, "{}", \'{}\');'.format(p_id, user['id'], form.comment.data, datetime.now()))
 
@@ -131,10 +137,15 @@ def profile(username = ""):
             username = current_user.username
         form = ProfileForm()
         if form.is_submitted():
-            query_db('UPDATE Users SET education="{}", employment="{}", music="{}", movie="{}", nationality="{}", birthday=\'{}\' WHERE username="{}" ;'.format(
-                form.education.data, form.employment.data, form.music.data, form.movie.data, form.nationality.data, form.birthday.data, username
-            ))
-            return redirect(url_for('profile', username=username, can_edit = can_edit))
+            if form.validate_on_submit():
+                query_db('UPDATE Users SET education="{}", employment="{}", music="{}", movie="{}", nationality="{}", birthday=\'{}\' WHERE username="{}" ;'.format(
+                    form.education.data, form.employment.data, form.music.data, form.movie.data, form.nationality.data, form.birthday.data, username
+                ))
+                user = query_db('SELECT * FROM Users WHERE username="{}";'.format(username), one=True)
+                return render_template('profile.html', title='profile', username=username, user=user, form=form, can_edit = can_edit)
+            else: 
+                flash("All fields must be valid!")
+
         
         user = query_db('SELECT * FROM Users WHERE username="{}";'.format(username), one=True)
         return render_template('profile.html', title='profile', username=username, user=user, form=form, can_edit = can_edit)
