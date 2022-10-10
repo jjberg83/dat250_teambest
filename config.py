@@ -6,7 +6,7 @@ class Config(object):
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'you-will-never-guess' # TODO: Use this with wtforms
     DATABASE = 'database.db'
     UPLOAD_PATH = 'app/static/uploads'
-    ALLOWED_EXTENSIONS = {} # Might use this at some point, probably don't want people to upload any file type
+    ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'} # Might use this at some point, probably don't want people to upload any file type
 
     #reCAPTCHA configuration
     RECAPTCHA_PUBLIC_KEY = os.environ.get(
