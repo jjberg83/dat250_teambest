@@ -29,11 +29,11 @@ class RegisterForm(FlaskForm):
     , Length(min = 1, max = 20, message = 'Too many characters')]) # redigert -stian
 
     username = StringField('Username', render_kw={'placeholder': 'Username'}, validators=[
-                           DataRequired(), Length(min=5, max=50, message="Must be between 5 and 50 characters"), NoneOf(invalidInput, message="Invalid input")])
+                           DataRequired(), Length(min=5, max=50, message="Must be between 12 and 50 characters"), NoneOf(invalidInput, message="Bad username!")])
     password = PasswordField('Password', render_kw={'placeholder': 'Password'}, validators=[
-                             DataRequired(), Length(min=8, max=50, message="Must be between 8 and 50 characters"), NoneOf(invalidInput, message="Invalid input"), EqualTo('confirm_password', message='Passwords must match')])
+                             DataRequired(), Length(min=12, max=50, message="Must be between 12 and 50 characters"), NoneOf(invalidInput, message="Invalid input"), EqualTo('confirm_password', message='Passwords must match')])
     confirm_password = PasswordField('Confirm Password', render_kw={'placeholder': 'Confirm Password'}, validators=[
-                                     DataRequired(), Length(min=8, max=50, message="Must be between 8 and 50 characters"), NoneOf(invalidInput, message="Invalid input")])
+                                     DataRequired(), Length(min=12, max=50, message="Must be between 12 and 50 characters"), NoneOf(invalidInput, message="Invalid input")])
     recaptcha = RecaptchaField()
     submit = SubmitField('Sign Up')
 

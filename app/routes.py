@@ -15,6 +15,7 @@ from wtforms import (StringField, PasswordField, SubmitField, TextAreaField, Int
 from wtforms.validators import InputRequired, Length
 
 # this file contains all the different routes, and the logic for communicating with the database
+ALLOWED_EXTENSIONS= {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
 
 @app.route('/logout') # This route is called when you press the Log Out button found on line 50 in base.html
 def logout():
@@ -55,9 +56,12 @@ def index():
             query_db('INSERT INTO Users (username, first_name, last_name, password) VALUES("{}", "{}", "{}", "{}");'.format(form.register.username.data, form.register.first_name.data,
             form.register.last_name.data, str(hashed_pw).replace("\\", "").replace("'", "").replace("b'", "")))
             return redirect(url_for('index'))
-        flash("Username already exists!")
+        flash("Bad username!")
     
     return render_template('index.html', title='Welcome', form=form)
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 # content stream page
 @app.route('/stream', methods=['GET', 'POST'])
@@ -72,9 +76,13 @@ def stream():
             else:
                 print("Not valid?")
             if form.image.data:
-                path = os.path.join(app.config['UPLOAD_PATH'], form.image.data.filename)
-                form.image.data.save(path)
-
+                if allowed_file(form.image.data.filename):
+                    path = os.path.join(app.config['UPLOAD_PATH'], form.image.data.filename)
+                    form.image.data.save(path)
+                else:
+                    flash("Invalid file format.")
+                    posts = query_db('SELECT p.*, u.*, (SELECT COUNT(*) FROM Comments WHERE p_id=p.id) AS cc FROM Posts AS p JOIN Users AS u ON u.id=p.u_id WHERE p.u_id IN (SELECT u_id FROM Friends WHERE f_id={0}) OR p.u_id IN (SELECT f_id FROM Friends WHERE u_id={0}) OR p.u_id={0} ORDER BY p.creation_time DESC;'.format(user['id']))
+                    return render_template('stream.html', title='Stream', username=username, form=form, posts = posts)
             query_db('INSERT INTO Posts (u_id, content, image, creation_time) VALUES({}, "{}", "{}", \'{}\');'.format(user['id'], form.content.data, form.image.data.filename, datetime.now()))
             return redirect(url_for('stream', username=username))
 
