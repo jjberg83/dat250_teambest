@@ -8,7 +8,7 @@ from flask_wtf.recaptcha.fields import RecaptchaField
 # TODO: Add validation, maybe use wtforms.validators??
 # TODO: There was some important security feature that wtforms provides, but I don't remember what; implement it
 
-invalidInput = ["105 OR 1=1", "name'; DELETE FROM items; --"]
+invalidInput = ["105 OR 1=1", '" or ""=""']
 
 class LoginForm(FlaskForm):
     username = StringField('Username', render_kw={'placeholder': 'Username'}
