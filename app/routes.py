@@ -29,26 +29,19 @@ def index():
     
     if form.login.is_submitted() and form.login.submit.data:
         if not form.login.validate_on_submit():
-
             user = User() #Vi lager en tom bruker
             sql = query_db('SELECT * FROM Users WHERE username="{}";'.format(form.login.username.data), one=True) #Finner informasjon om navnet du skriver inn i "Username" feltet i index"...
-            id = sql["id"] #...Trekker ut brukerens ID fra sql requesten...
-            user.SetUser(id) #...og bruker ID-en til å sette all annen informasjon om brukeren. !!!!!!!!!!!!!!!!
-            
-            inserted_pw = form.login.password.data.encode() #fra string til byte
-
-            inserted_pw_hash = str(hashlib.pbkdf2_hmac("sha256", inserted_pw, user.username.encode(), 100000)).replace("\\", "")
-            
-            correct_pw_hash = user.password
-            print("Type Correct PW    : ",type(correct_pw_hash))
-            print("Correct PW String  : ",correct_pw_hash.replace("\\", ""))
-            print("Type Inserted PW   : ",type((inserted_pw_hash)))
-            print("Inserted PW string : ", inserted_pw_hash.replace("\\", ""))
-            if user == None:
-                flash('Wrong username and/or password') #Vi skriver dette for ikke å røpe om den som prøver å logge seg inn har skrevet noe rett...
-            elif inserted_pw_hash.replace("\\", "") == correct_pw_hash.replace("\\", ""):
-            #elif user.password == form.login.password.data:
-                login_user(user, remember = form.login.remember_me.data) #Dersom remember me er hooket av, vil brukeren bli remembered til neste gang
+            if sql != None:
+                id = sql["id"] #...Trekker ut brukerens ID fra sql requesten...
+                user.SetUser(id) #...og bruker ID-en til å sette all annen informasjon om brukeren.
+                inserted_pw = form.login.password.data.encode() #fra string til byte
+                inserted_pw_hash = str(hashlib.pbkdf2_hmac("sha256", inserted_pw, user.username.encode(), 100000)).replace("\\", "").replace("'", "").replace("b'", "")
+                correct_pw_hash = user.password
+                if user == None:
+                    flash('Wrong username and/or password') #Vi skriver dette for ikke å røpe om den som prøver å logge seg inn har skrevet noe rett...
+                elif inserted_pw_hash.replace("\\", "").replace("'", "").replace("b'", "") == correct_pw_hash.replace("\\", "").replace("'", "").replace("b'", ""):
+                #elif user.password == form.login.password.data:
+                    login_user(user, remember = form.login.remember_me.data) #Dersom remember me er hooket av, vil brukeren bli remembered til neste gang
 
 
                 return redirect(url_for('stream'))
@@ -56,12 +49,13 @@ def index():
                 flash('Wrong username and/or password')
 
     elif form.register.is_submitted() and form.register.submit.data:
-        if form.register.validate_on_submit():
+        if form.register.validate_on_submit() and query_db('SELECT * FROM Users WHERE username="{}";'.format(form.register.username.data), one=True) == None:
             flash("New user registered!")
             hashed_pw = hashlib.pbkdf2_hmac("sha256", form.register.password.data.encode(), form.register.username.data.encode(), 100000)
             query_db('INSERT INTO Users (username, first_name, last_name, password) VALUES("{}", "{}", "{}", "{}");'.format(form.register.username.data, form.register.first_name.data,
-            form.register.last_name.data,  str(hashed_pw).replace("\\", "")))
+            form.register.last_name.data, str(hashed_pw).replace("\\", "").replace("'", "").replace("b'", "")))
             return redirect(url_for('index'))
+        flash("Username already exists!")
     
     return render_template('index.html', title='Welcome', form=form)
 
@@ -74,11 +68,15 @@ def stream():
         user = query_db('SELECT * FROM Users WHERE username="{}";'.format(username), one=True)
         if form.is_submitted():
             if form.validate_on_submit():
-                if form.image.data:
-                    path = os.path.join(app.config['UPLOAD_PATH'], form.image.data.filename)
-                    form.image.data.save(path)
-                query_db('INSERT INTO Posts (u_id, content, image, creation_time) VALUES({}, "{}", "{}", \'{}\');'.format(user['id'], form.content.data, form.image.data.filename, datetime.now()))
-                return redirect(url_for('stream', username=username))
+                print("VALID")
+            else:
+                print("Not valid?")
+            if form.image.data:
+                path = os.path.join(app.config['UPLOAD_PATH'], form.image.data.filename)
+                form.image.data.save(path)
+
+            query_db('INSERT INTO Posts (u_id, content, image, creation_time) VALUES({}, "{}", "{}", \'{}\');'.format(user['id'], form.content.data, form.image.data.filename, datetime.now()))
+            return redirect(url_for('stream', username=username))
 
         posts = query_db('SELECT p.*, u.*, (SELECT COUNT(*) FROM Comments WHERE p_id=p.id) AS cc FROM Posts AS p JOIN Users AS u ON u.id=p.u_id WHERE p.u_id IN (SELECT u_id FROM Friends WHERE f_id={0}) OR p.u_id IN (SELECT f_id FROM Friends WHERE u_id={0}) OR p.u_id={0} ORDER BY p.creation_time DESC;'.format(user['id']))
         return render_template('stream.html', title='Stream', username=username, form=form, posts=posts)
@@ -89,9 +87,8 @@ def stream():
 def comments(username, p_id):
     form = CommentsForm()
     if form.is_submitted():
-        if form.validate_on_submit():
-            user = query_db('SELECT * FROM Users WHERE username="{}";'.format(username), one=True)
-            query_db('INSERT INTO Comments (p_id, u_id, comment, creation_time) VALUES({}, {}, "{}", \'{}\');'.format(p_id, user['id'], form.comment.data, datetime.now()))
+        user = query_db('SELECT * FROM Users WHERE username="{}";'.format(username), one=True)
+        query_db('INSERT INTO Comments (p_id, u_id, comment, creation_time) VALUES({}, {}, "{}", \'{}\');'.format(p_id, user['id'], form.comment.data, datetime.now()))
 
     post = query_db('SELECT * FROM Posts WHERE id={};'.format(p_id), one=True)
     all_comments = query_db('SELECT DISTINCT * FROM Comments AS c JOIN Users AS u ON c.u_id=u.id WHERE c.p_id={} ORDER BY c.creation_time DESC;'.format(p_id))
